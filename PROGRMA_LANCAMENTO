@@ -1,0 +1,74 @@
+import logging
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import database  
+
+#logs
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+
+#valida dados
+def validar_dados(cliente, produto, quantidade, categoria):
+    try:
+        quantidade = int(quantidade)  
+        if cliente and produto and categoria in ['Casa', 'Bazar', 'Ferramentas', 'Escritório', 'Elétrica', 'Jardinagem']:
+            return True
+    except ValueError:
+        return False
+    return False
+
+# Classe principal
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.title('Cadastro de Produtos')
+        database.criar_tabela()  
+        self.criar_interface()
+
+    def criar_interface(self):
+        #campos e botões na gráfica
+        Label(self.root, text='Cliente').grid(row=0, column=0)
+        self.entry_cliente = Entry(self.root)
+        self.entry_cliente.grid(row=0, column=1)
+
+        Label(self.root, text='Produto').grid(row=1, column=0)
+        self.entry_produto = Entry(self.root)
+        self.entry_produto.grid(row=1, column=1)
+
+        Label(self.root, text='Quantidade').grid(row=2, column=0)
+        self.entry_quantidade = Entry(self.root)
+        self.entry_quantidade.grid(row=2, column=1)
+
+        Label(self.root, text='Categoria').grid(row=3, column=0)
+        self.combo_categoria = ttk.Combobox(self.root, values=['Casa', 'Bazar', 'Ferramentas', 'Escritório', 'Elétrica', 'Jardinagem'])
+        self.combo_categoria.grid(row=3, column=1)
+
+        Button(self.root, text='Salvar', command=self.salvar_dados).grid(row=4, column=0, columnspan=2)
+
+    def salvar_dados(self):
+        cliente = self.entry_cliente.get()
+        produto = self.entry_produto.get()
+        quantidade = self.entry_quantidade.get()
+        categoria = self.combo_categoria.get()
+
+        # Validação dos dados
+        if validar_dados(cliente, produto, quantidade, categoria):
+            database.inserir_venda(cliente, produto, quantidade, categoria)  
+            messagebox.showinfo('Sucesso', 'Dados salvos com sucesso!')
+            logging.info(f'Registro adicionado: Cliente={cliente}, Produto={produto}, Quantidade={quantidade}, Categoria={categoria}')
+            self.limpar_campos()  
+        else:
+            messagebox.showwarning('Erro', 'Dados inválidos! Por favor, corrija os dados.')
+            logging.warning(f'Tentativa de salvar dados inválidos: Cliente={cliente}, Produto={produto}, Quantidade={quantidade}, Categoria={categoria}')
+
+    def limpar_campos(self):
+        
+        self.entry_cliente.delete(0, END)
+        self.entry_produto.delete(0, END)
+        self.entry_quantidade.delete(0, END)
+        self.combo_categoria.set('')
+
+if __name__ == "__main__":
+    root = Tk()
+    app = App(root)
+    root.mainloop()
