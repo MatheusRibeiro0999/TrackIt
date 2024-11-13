@@ -25,6 +25,7 @@ def create_app():
     from app.routes.relatorios_estoque import relatorios_estoque_bp
     from app.routes.relatorios_vendas import relatorios_vendas_bp
     from app.routes.alertas_reposicao import alertas_reposicao_bp
+    from app.routes.perfis import perfis_bp
     
     #registro dos blueprints
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
@@ -36,5 +37,6 @@ def create_app():
     app.register_blueprint(relatorios_estoque_bp, url_prefix='/relatorios_estoque')
     app.register_blueprint(relatorios_vendas_bp, url_prefix='/relatorios_vendas')
     app.register_blueprint(alertas_reposicao_bp, url_prefix='/alertas_reposicao')
+    app.register_blueprint(perfis_bp, url_prefix='/perfis')
     
     return app
