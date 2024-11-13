@@ -1,6 +1,19 @@
 from . import db
 from datetime import datetime
 
+class Perfil(db.Model):
+    __tablename__ = 'perfis'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), unique=True, nullable=False)
+
+    # relaciona com a tabela usuarios
+    usuarios = db.relationship('Usuario', backref='perfil', lazy=True)
+
+    def __repr__(self):
+        return f"<Perfil {self.nome}>"
+
+
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
 
@@ -8,12 +21,13 @@ class Usuario(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(255), nullable=False)
-    perfil = db.Column(db.Enum('admin', 'vendedor', 'estoquista'), nullable=False)
+    perfil_id = db.Column(db.Integer, db.ForeignKey('perfis.id'), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"<Usuario {self.nome}>"
-    
+
+
 class Produto(db.Model):
     __tablename__ = 'produtos'
 
@@ -27,7 +41,8 @@ class Produto(db.Model):
 
     def __repr__(self):
         return f"<Produto {self.nome}>"
-    
+
+
 class MovimentacaoEstoque(db.Model):
     __tablename__ = 'movimentacao_estoque'
 
@@ -41,7 +56,8 @@ class MovimentacaoEstoque(db.Model):
 
     def __repr__(self):
         return f"<MovimentacaoEstoque {self.tipo} de {self.quantidade} unidades do produto {self.produto.nome}>"
-    
+
+
 class Pedido(db.Model):
     __tablename__ = 'pedidos'
 
@@ -55,7 +71,8 @@ class Pedido(db.Model):
 
     def __repr__(self):
         return f"<Pedido {self.id} - Status: {self.status}>"
-    
+
+
 class ItemPedido(db.Model):
     __tablename__ = 'itens_pedido'
 
@@ -71,7 +88,8 @@ class ItemPedido(db.Model):
 
     def __repr__(self):
         return f"<ItemPedido {self.produto.nome} - Quantidade: {self.quantidade}>"
-    
+
+
 class LogAtividade(db.Model):
     __tablename__ = 'logs_atividades'
 
@@ -84,7 +102,8 @@ class LogAtividade(db.Model):
 
     def __repr__(self):
         return f"<LogAtividade {self.atividade}>"
-    
+
+
 class RelatorioEstoque(db.Model):
     __tablename__ = 'relatorios_estoque'
 
@@ -95,7 +114,8 @@ class RelatorioEstoque(db.Model):
 
     def __repr__(self):
         return f"<RelatorioEstoque {self.data_relatorio}>"
-    
+
+
 class RelatorioVendas(db.Model):
     __tablename__ = 'relatorios_vendas'
 
@@ -106,7 +126,8 @@ class RelatorioVendas(db.Model):
 
     def __repr__(self):
         return f"<RelatorioVendas {self.data_relatorio}>"
-    
+
+
 class AlertaReposicao(db.Model):
     __tablename__ = 'alertas_reposicao'
 
@@ -120,4 +141,3 @@ class AlertaReposicao(db.Model):
 
     def __repr__(self):
         return f"<AlertaReposicao para {self.produto.nome}>"
-    
