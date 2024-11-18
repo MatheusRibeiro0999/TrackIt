@@ -1,13 +1,14 @@
 from flask import Blueprint, request, jsonify
-from . import db
+from app import db
 from app.models import Perfil
-
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 perfis_bp = Blueprint('perfis', __name__)
 
-
 @perfis_bp.route('/perfis', methods=['POST'])
+@jwt_required()
 def criar_perfil():
+    usuario_id = get_jwt_identity()  
     try:
         nome = request.json.get('nome')
         
@@ -25,8 +26,8 @@ def criar_perfil():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @perfis_bp.route('/perfis', methods=['GET'])
+@jwt_required()
 def listar_perfis():
     try:
         perfis = Perfil.query.all()
@@ -36,8 +37,8 @@ def listar_perfis():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @perfis_bp.route('/perfis/<int:id>', methods=['PUT'])
+@jwt_required()
 def atualizar_perfil(id):
     try:
         perfil = Perfil.query.get(id)
@@ -57,8 +58,8 @@ def atualizar_perfil(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @perfis_bp.route('/perfis/<int:id>', methods=['DELETE'])
+@jwt_required()
 def deletar_perfil(id):
     try:
         perfil = Perfil.query.get(id)
