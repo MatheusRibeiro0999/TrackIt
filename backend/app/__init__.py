@@ -1,9 +1,10 @@
 from flask import Flask
-from config import Config
+from app.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
-#init do db
+# Init do db
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -11,11 +12,14 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # init extenção flask migrate
+    # Configuração do JWT
+    app.config['JWT_SECRET_KEY'] = 'sua_chave_secreta'
+    jwt = JWTManager(app)  # Inicializa JWT
+    
     db.init_app(app)
     migrate.init_app(app, db)
     
-    #import dos blueprints
+    # Import blueprints
     from app.routes.usuarios import usuarios_bp
     from app.routes.produtos import produtos_bp
     from app.routes.movimentacao_estoque import movimentacao_estoque_bp
@@ -26,8 +30,9 @@ def create_app():
     from app.routes.relatorios_vendas import relatorios_vendas_bp
     from app.routes.alertas_reposicao import alertas_reposicao_bp
     from app.routes.perfis import perfis_bp
-    
-    #registro dos blueprints
+    from app.routes.auth import auth_bp
+
+    # Registro blueprints
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
     app.register_blueprint(produtos_bp, url_prefix='/produtos')
     app.register_blueprint(movimentacao_estoque_bp, url_prefix='/movimentacao_estoque')
@@ -38,5 +43,6 @@ def create_app():
     app.register_blueprint(relatorios_vendas_bp, url_prefix='/relatorios_vendas')
     app.register_blueprint(alertas_reposicao_bp, url_prefix='/alertas_reposicao')
     app.register_blueprint(perfis_bp, url_prefix='/perfis')
-    
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+
     return app
